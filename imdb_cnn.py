@@ -48,6 +48,7 @@ conv1 = Conv1D(filters,
                  activation='relu',
                  strides=1)(dropout)
 pool = GlobalMaxPooling1D()(conv1)
+lstm = LSTM(32)(pool)
 x_out = Dense(hidden_dims, )(pool)
 dropout = Dropout(0.2)(x_out)
 

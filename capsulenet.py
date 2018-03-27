@@ -33,9 +33,12 @@ def CapsNet(input_shape, n_class, num_routing):
 
     conv1 = layers.Conv1D(filters=256, kernel_size=9, strides=1, padding='valid', activation='relu', name='conv1')(
         embed)
-
+    print(conv1.shape)
+    from keras.layers import LSTM
+    lstm = LSTM(32, return_sequences=True)(conv1)
+    print(lstm.shape)
     # Layer 2: Conv2D layer with `squash` activation, then reshape to [None, num_capsule, dim_vector]
-    primarycaps = PrimaryCap(conv1, dim_vector=8, n_channels=32, kernel_size=9, strides=2, padding='valid')
+    primarycaps = PrimaryCap(lstm, dim_vector=8, n_channels=32, kernel_size=9, strides=2, padding='valid')
 
     # Layer 3: Capsule layer. Routing algorithm works here.
     digitcaps = CapsuleLayer(num_capsule=n_class, dim_vector=16, num_routing=num_routing, name='digitcaps')(primarycaps)
