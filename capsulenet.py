@@ -11,7 +11,7 @@ Usage:
 """
 
 #    from keras.layers import LSTM, Dropout
-from keras.layers import LSTM, Dropout, GRU
+from keras.layers import LSTM, Dropout, GRU, CuDNNLSTM, CuDNNGRU, SimpleRNNCell
 from keras import layers, models
 from keras import backend as K
 from capsulelayers import CapsuleLayer, PrimaryCap, Length, Mask
@@ -34,7 +34,7 @@ def CapsNet(input_shape, n_class, num_routing):
     embed = layers.Embedding(max_features, embed_dim, input_length=maxlen)(x)
     conv1 = layers.Conv1D(filters=256, kernel_size=9, strides=1, padding='valid', activation='relu', name='conv1')(
         embed)
-    lstm = GRU(64, return_sequences=True)(conv1)
+    lstm = CuDNNLSTM(64, return_sequences=True)(conv1)
     #dropout = Dropout(.2)(lstm)
     # Layer 2: Conv2D layer with `squash` activation, then reshape to [None, num_capsule, dim_vector]
     primarycaps = PrimaryCap(lstm, dim_vector=8, n_channels=32, kernel_size=9, strides=2, padding='valid')
@@ -100,11 +100,9 @@ def train(model, data, args):
     model.fit([x_train, y_train], [y_train, x_train], batch_size=args.batch_size, epochs=args.epochs,
               validation_data=[[x_test, y_test], [y_test, x_test]], callbacks=[log, tb, checkpoint], verbose=1)
 
-    model.save_weights(args.save_dir + '/trained_model.h5')
-    print('Trained model saved to \'%s/trained_model.h5\'' % args.save_dir)
-
-    from utils import plot_log
-    plot_log(args.save_dir + '/log.csv', show=True)
+    y_pred, x_recon = model.predict([x_test, y_test], batch_size=100)
+    print('-' * 50)
+    print('Test acc:', np.sum(np.argmax(y_pred, 1) == np.argmax(y_test, 1)) / y_test.shape[0])
 
     return model
 
