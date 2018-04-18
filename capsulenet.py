@@ -11,7 +11,7 @@ Usage:
 """
 
 #    from keras.layers import LSTM, Dropout
-from keras.layers import LSTM, Dropout
+from keras.layers import LSTM, Dropout, GRU, RNN, CuDNNLSTM, CuDNNGRU, SimpleRNNCell
 from keras import layers, models
 from keras import backend as K
 from capsulelayers import CapsuleLayer, PrimaryCap, Length, Mask
@@ -32,15 +32,12 @@ def CapsNet(input_shape, n_class, num_routing):
     """
     x = layers.Input(shape=(maxlen,))
     embed = layers.Embedding(max_features, embed_dim, input_length=maxlen)(x)
-    drop1 = Dropout(.25)(embed)
     conv1 = layers.Conv1D(filters=256, kernel_size=9, strides=1, padding='valid', activation='relu', name='conv1')(
-        drop1)
-    print(conv1.shape)
-
-    lstm = LSTM(64, return_sequences=True)(conv1)
-    dropout = Dropout(.2)(lstm)
+        embed)
+    lstm = GRU(64, return_sequences=True)(conv1)
+    #dropout = Dropout(.2)(lstm)
     # Layer 2: Conv2D layer with `squash` activation, then reshape to [None, num_capsule, dim_vector]
-    primarycaps = PrimaryCap(dropout, dim_vector=8, n_channels=32, kernel_size=9, strides=2, padding='valid')
+    primarycaps = PrimaryCap(lstm, dim_vector=8, n_channels=32, kernel_size=9, strides=2, padding='valid')
 
 
     # Layer 3: Capsule layer. Routing algorithm works here.
@@ -152,7 +149,7 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser()
     parser.add_argument('--batch_size', default=100, type=int)
-    parser.add_argument('--epochs', default=20, type=int)
+    parser.add_argument('--epochs', default=5, type=int)
     parser.add_argument('--lam_recon', default=0.0005, type=float)
     parser.add_argument('--num_routing', default=3, type=int)  # num_routing should > 0
     parser.add_argument('--shift_fraction', default=0.1, type=float)
