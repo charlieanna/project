@@ -11,7 +11,7 @@ Usage:
 """
 
 #    from keras.layers import LSTM, Dropout
-from keras.layers import LSTM, Dropout, GRU, CuDNNLSTM, CuDNNGRU, SimpleRNN
+from keras.layers import LSTM, Dropout, GRU, CuDNNLSTM, CuDNNGRU, SimpleRNNCell
 from keras import layers, models
 from keras import backend as K
 from capsulelayers import CapsuleLayer, PrimaryCap, Length, Mask
@@ -34,10 +34,10 @@ def CapsNet(input_shape, n_class, num_routing):
     embed = layers.Embedding(max_features, embed_dim, input_length=maxlen)(x)
     conv1 = layers.Conv1D(filters=256, kernel_size=9, strides=1, padding='valid', activation='relu', name='conv1')(
         embed)
-    lstm = CuDNNGRU(64, return_sequences=True)(conv1)
+   # lstm = CuDNNLSTM(64, return_sequences=True)(conv1)
     #dropout = Dropout(.2)(lstm)
     # Layer 2: Conv2D layer with `squash` activation, then reshape to [None, num_capsule, dim_vector]
-    primarycaps = PrimaryCap(lstm, dim_vector=8, n_channels=32, kernel_size=9, strides=2, padding='valid')
+    primarycaps = PrimaryCap(conv1, dim_vector=8, n_channels=32, kernel_size=9, strides=2, padding='valid')
 
 
     # Layer 3: Capsule layer. Routing algorithm works here.
