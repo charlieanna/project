@@ -11,7 +11,7 @@ Usage:
 """
 
 #    from keras.layers import LSTM, Dropout
-from keras.layers import LSTM, Dropout, GRU, RNN, CuDNNLSTM, CuDNNGRU, SimpleRNNCell
+from keras.layers import LSTM, Dropout, GRU, CuDNNLSTM, CuDNNGRU, SimpleRNNCell
 from keras import layers, models
 from keras import backend as K
 from capsulelayers import CapsuleLayer, PrimaryCap, Length, Mask
