@@ -9,7 +9,7 @@ Usage:
 
     
 """
-
+from __future__ import print_function
 #    from keras.layers import LSTM, Dropout
 from keras.layers import LSTM, Dropout
 from keras import layers, models
@@ -17,9 +17,22 @@ from keras import backend as K
 from capsulelayers import CapsuleLayer, PrimaryCap, Length, Mask
 from keras.preprocessing import sequence
 
+
+
+import numpy as np
+import keras
+from keras.datasets import reuters
+from keras.models import Sequential
+from keras.layers import Dense, Dropout, Activation
+from keras.preprocessing.text import Tokenizer
+
 max_features = 5000
 maxlen = 400
 embed_dim = 50
+
+max_words = 400
+batch_size = 32
+epochs = 5
 
 
 def CapsNet(input_shape, n_class, num_routing):
@@ -133,6 +146,31 @@ def load_imdb(maxlen=400):
     (x_train, y_train), (x_test, y_test) = imdb.load_data(num_words=max_features)
     x_train = sequence.pad_sequences(x_train, maxlen=maxlen)
     x_test = sequence.pad_sequences(x_test, maxlen=maxlen)
+    # return (x_train, y_train), (x_test, y_test)
+
+    print('Loading data...')
+    (x_train, y_train), (x_test, y_test) = reuters.load_data(num_words=max_words,
+                                                             test_split=0.2)
+    print(len(x_train), 'train sequences')
+    print(len(x_test), 'test sequences')
+
+    num_classes = np.max(y_train) + 1
+    print(num_classes, 'classes')
+
+    print('Vectorizing sequence data...')
+    tokenizer = Tokenizer(num_words=max_words)
+    x_train = tokenizer.sequences_to_matrix(x_train, mode='binary')
+    x_test = tokenizer.sequences_to_matrix(x_test, mode='binary')
+    print('x_train shape:', x_train.shape)
+    print('x_test shape:', x_test.shape)
+
+    print('Convert class vector to binary class matrix '
+          '(for use with categorical_crossentropy)')
+    y_train = keras.utils.to_categorical(y_train, num_classes)
+    y_test = keras.utils.to_categorical(y_test, num_classes)
+    print('y_train shape:', y_train.shape)
+    print('y_test shape:', y_test.shape)
+
     return (x_train, y_train), (x_test, y_test)
 
 
@@ -166,7 +204,7 @@ if __name__ == "__main__":
     print(y_train.shape)
     # define model
     model = CapsNet(input_shape=x_train.shape,
-                    n_class=1,
+                    n_class=46,
                     num_routing=args.num_routing)
     model.summary()
     plot_model(model, to_file=args.save_dir + '/model.png', show_shapes=True)

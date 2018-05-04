@@ -1,68 +1,60 @@
-'''This example demonstrates the use of Convolution1D for text classification.
-Gets to 0.89 test accuracy after 2 epochs.
-90s/epoch on Intel i5 2.4Ghz CPU.
-10s/epoch on Tesla K40 GPU.
+'''Trains and evaluate a simple MLP
+on the Reuters newswire topic classification task.
 '''
-
 from __future__ import print_function
 
-from keras.preprocessing import sequence
-from keras.models import Sequential, Model
+import numpy as np
+import keras
+from keras.datasets import reuters
+from keras.models import Sequential
 from keras.layers import Dense, Dropout, Activation
-from keras.layers import Embedding
-from keras.layers import Conv1D, GlobalMaxPooling1D, Input
-from keras.datasets import imdb
+from keras.preprocessing.text import Tokenizer
 
-# set parameters:
-max_features = 5000
-maxlen = 400
+max_words = 1000
 batch_size = 32
-embedding_dims = 50
-filters = 250
-kernel_size = 3
-hidden_dims = 250
-epochs = 2
+epochs = 5
 
 print('Loading data...')
-(x_train, y_train), (x_test, y_test) = imdb.load_data(num_words=max_features)
+(x_train, y_train), (x_test, y_test) = reuters.load_data(num_words=max_words,
+                                                         test_split=0.2)
 print(len(x_train), 'train sequences')
 print(len(x_test), 'test sequences')
 
-print('Pad sequences (samples x time)')
-x_train = sequence.pad_sequences(x_train, maxlen=maxlen)
-x_test = sequence.pad_sequences(x_test, maxlen=maxlen)
+num_classes = np.max(y_train) + 1
+print(num_classes, 'classes')
+
+print('Vectorizing sequence data...')
+tokenizer = Tokenizer(num_words=max_words)
+x_train = tokenizer.sequences_to_matrix(x_train, mode='binary')
+x_test = tokenizer.sequences_to_matrix(x_test, mode='binary')
 print('x_train shape:', x_train.shape)
 print('x_test shape:', x_test.shape)
+
+print('Convert class vector to binary class matrix '
+      '(for use with categorical_crossentropy)')
+y_train = keras.utils.to_categorical(y_train, num_classes)
+y_test = keras.utils.to_categorical(y_test, num_classes)
 print('y_train shape:', y_train.shape)
+print('y_test shape:', y_test.shape)
 
-print('Build model...')
+print('Building model...')
+model = Sequential()
+model.add(Dense(512, input_shape=(max_words,)))
+model.add(Activation('relu'))
+model.add(Dropout(0.5))
+model.add(Dense(num_classes))
+model.add(Activation('softmax'))
 
-x = Input(shape=(maxlen, ))
-embed = Embedding(max_features, embedding_dims, input_length=maxlen)(x)
-print(embed.shape)
-dropout = Dropout(0.2)(embed)
-
-conv1 = Conv1D(filters,
-                 kernel_size,
-                 padding='valid',
-                 activation='relu',
-                 strides=1)(dropout)
-pool = GlobalMaxPooling1D()(conv1)
-lstm = LSTM(32)(pool)
-x_out = Dense(hidden_dims, )(pool)
-dropout = Dropout(0.2)(x_out)
-
-out = Activation('relu')(dropout)
-x_out = Dense(1, activation='sigmoid')(out)
-
-model = Model(x, x_out)
-
-model.compile(loss='binary_crossentropy',
+model.compile(loss='categorical_crossentropy',
               optimizer='adam',
               metrics=['accuracy'])
 
-print(model.summary())
-model.fit(x_train, y_train,
-          batch_size=batch_size,
-          epochs=epochs,
-          validation_data=(x_test, y_test))
+history = model.fit(x_train, y_train,
+                    batch_size=batch_size,
+                    epochs=epochs,
+                    verbose=1,
+                    validation_split=0.1)
+score = model.evaluate(x_test, y_test,
+                       batch_size=batch_size, verbose=1)
+print('Test score:', score[0])
+print('Test accuracy:', score[1])
