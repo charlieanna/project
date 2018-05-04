@@ -185,7 +185,7 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser()
     parser.add_argument('--batch_size', default=100, type=int)
-    parser.add_argument('--epochs', default=20, type=int)
+    parser.add_argument('--epochs', default=2, type=int)
     parser.add_argument('--lam_recon', default=0.0005, type=float)
     parser.add_argument('--num_routing', default=3, type=int)  # num_routing should > 0
     parser.add_argument('--shift_fraction', default=0.1, type=float)
@@ -204,7 +204,7 @@ if __name__ == "__main__":
     print(y_train.shape)
     # define model
     model = CapsNet(input_shape=x_train.shape,
-                    n_class=46,
+                    n_class=y_train.shape[1],
                     num_routing=args.num_routing)
     model.summary()
     plot_model(model, to_file=args.save_dir + '/model.png', show_shapes=True)
