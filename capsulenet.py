@@ -184,7 +184,7 @@ if __name__ == "__main__":
     import argparse
 
     parser = argparse.ArgumentParser()
-    parser.add_argument('--batch_size', default=100, type=int)
+    parser.add_argument('--batch_size', default=32, type=int)
     parser.add_argument('--epochs', default=2, type=int)
     parser.add_argument('--lam_recon', default=0.0005, type=float)
     parser.add_argument('--num_routing', default=3, type=int)  # num_routing should > 0
