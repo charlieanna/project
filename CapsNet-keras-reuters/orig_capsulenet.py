@@ -183,7 +183,7 @@ if __name__ == "__main__":
     # define model
     model, eval_model, manipulate_model = CapsNet(input_shape=x_train.shape[1:],
                                                   n_class=len(np.unique(np.argmax(y_train, 1))),
-                                                  routings=args.num_routing)
+                                                  num_routing=args.num_routing)
     # # model = CapsNet(input_shape=x_train.shape,
     #                 n_class=num_classes,
     #                 num_routing=args.num_routing)
