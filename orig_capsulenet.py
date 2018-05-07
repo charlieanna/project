@@ -106,10 +106,16 @@ def train(model, data, args):
 
 def test(model, data):
     x_test, y_test = data
-    y_pred, x_recon = model.predict([x_test, y_test], batch_size=100)
+    # y_pred, x_recon = model.predict([x_test, y_test], batch_size=100)
     print('-' * 50)
+    # print(y_pred, y_test)
+    
+
+    y_pred = model.predict(x_test, batch_size=100)
     print(y_pred, y_test)
-    print('Test acc:', np.sum(np.argmax(y_pred, 1) == y_test) / y_test.shape[0])
+    score = model.evaluate(x_test, y_test,
+                           batch_size=batch_size, verbose=1)
+    print('Test acc:', score)
 
 
 def load_imdb(maxlen=400):
