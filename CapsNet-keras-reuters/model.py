@@ -51,6 +51,7 @@ flatten = Flatten()(concatenated_tensor)
 dropout = Dropout(drop)(flatten)
 output = Dense(units=1, activation='softmax')(dropout)
 
+
 # this creates a model that includes
 model = Model(inputs=inputs, outputs=output)
 
@@ -61,5 +62,6 @@ model.compile(optimizer=adam, loss='binary_crossentropy', metrics=['accuracy'])
 print("Traning Model...")
 model.fit(X_train, y_train, batch_size=batch_size, epochs=epochs, verbose=1, callbacks=[checkpoint], validation_data=(X_test, y_test))  # starts training
 
+score = model.evaluate(X_test)
 
-
+print(score)

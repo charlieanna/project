@@ -31,10 +31,10 @@ def CapsNet(input_shape, n_class, num_routing):
 
     conv1 = layers.Conv1D(filters=256, kernel_size=9, strides=1, padding='valid', activation='relu', name='conv1')(
         embed)
-    # lstm = CuDNNGRU(64, return_sequences=True)(conv1)
-    # dropout = Dropout(.2)(conv1)
+    lstm = CuDNNGRU(64, return_sequences=True)(conv1)
+    dropout = Dropout(.2)(lstm)
     # Layer 2: Conv2D layer with `squash` activation, then reshape to [None, num_capsule, dim_vector]
-    primarycaps = PrimaryCap(conv1, dim_vector=8, n_channels=32, kernel_size=9, strides=2, padding='valid')
+    primarycaps = PrimaryCap(dropout, dim_vector=8, n_channels=32, kernel_size=9, strides=2, padding='valid')
 
     # Layer 3: Capsule layer. Routing algorithm works here.
     digitcaps = CapsuleLayer(num_capsule=n_class, dim_vector=16, num_routing=num_routing, name='digitcaps')(primarycaps)
@@ -105,7 +105,6 @@ def train(model, data, args):
     
 
     y_pred, _ = model.predict([x_test, y_test], batch_size=100)
-    print(y_pred, y_test)
     import numpy as np
     score = np.mean(np.equal(y_test, np.array(np.round(y_pred).flatten())))
     print(score)
