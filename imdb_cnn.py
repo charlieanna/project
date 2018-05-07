@@ -67,9 +67,13 @@ model.fit(x_train, y_train,
           epochs=epochs,
           validation_split=0.1)
 y_pred = model.predict(x_test, batch_size=batch_size)
+print(y_pred, y_test)
+score = model.evaluate(x_test, y_test,
+                       batch_size=batch_size, verbose=1)
+print('Test score:', score[0])
+print('Test accuracy:', score[1])
+
 import numpy as np
 print(y_test, np.round(y_pred))
 score = np.mean(np.equal(y_test, np.round(y_pred)))
 print(score)
-print('Test score:', score[0])
-print('Test accuracy:', score[1])
