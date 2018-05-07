@@ -173,7 +173,7 @@ if __name__ == "__main__":
                     n_class=1,
                     num_routing=args.num_routing)
     model.summary()
-    plot_model(model, to_file=args.save_dir + '/model.png', show_shapes=True)
+    
 
     # train or test
     if args.weights is not None:  # init the model weights with provided one
