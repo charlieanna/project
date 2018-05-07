@@ -66,7 +66,7 @@ model.fit(x_train, y_train,
           batch_size=batch_size,
           epochs=epochs,
           validation_split=0.1)
-y_pred, x_recon = model.predict([x_test, y_test], batch_size=batch_size)
+y_pred, x_recon = model.predict(x_test, y_test, batch_size=batch_size)
 print(y_pred, y_test)
 score = model.evaluate(x_test, y_test,
                        batch_size=batch_size, verbose=1)
