@@ -88,7 +88,6 @@ model.fit(x_train, y_train,
           validation_split=0.1)
 y_pred = model.predict(x_test, batch_size=batch_size)
 print(y_pred, y_test)
-score = model.evaluate(x_test, y_test,
-                       batch_size=batch_size, verbose=1)
+score = np.mean(np.equal(np.argmax(y_test, axis=-1), np.argmax(y_pred, axis=-1)))
 print('Test score:', score[0])
 print('Test accuracy:', score[1])
