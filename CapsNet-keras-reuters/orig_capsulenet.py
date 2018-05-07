@@ -13,9 +13,6 @@ from keras import backend as K
 from capsulelayers import CapsuleLayer, PrimaryCap, Length, Mask
 from keras.preprocessing import sequence
 from keras.layers import LSTM, Dropout, GRU, CuDNNLSTM, CuDNNGRU
-from sklearn.model_selection import train_test_split
-from data_helpers import load_data
-
 max_features = 5000
 maxlen = 400
 embed_dim = 50
@@ -138,20 +135,18 @@ def test(model, data):
 
 def load_imdb(maxlen=400):
     import keras
-    
-    print('Loading data')
-    x, y, vocabulary, vocabulary_inv = load_data()
-
-    # x.shape -> (10662, 56)
-    # y.shape -> (10662, 2)
-    # len(vocabulary) -> 18765
-    # len(vocabulary_inv) -> 18765
-
-    x_train, x_test, y_train, y_test = train_test_split( x, y, test_size=0.2, random_state=42)
+    from keras.datasets import reuters
+    (x_train, y_train), (x_test, y_test) = reuters.load_data(num_words=max_features)
    # (x_train, y_train), (x_test, y_test) = imdb.load_data(num_words=max_features)
     x_train = sequence.pad_sequences(x_train, maxlen=maxlen)
     x_test = sequence.pad_sequences(x_test, maxlen=maxlen)
 
+    print('Convert class vector to binary class matrix '
+      '(for use with categorical_crossentropy)')
+    y_train = keras.utils.to_categorical(y_train.astype('float32'))
+    y_test = keras.utils.to_categorical(y_test.astype('float32'))
+    print('y_train shape:', y_train.shape)
+    print('y_test shape:', y_test.shape)
     return (x_train, y_train), (x_test, y_test)
 
 
@@ -183,9 +178,15 @@ if __name__ == "__main__":
     (x_train, y_train), (x_test, y_test) = load_imdb()
     print(x_train.shape)
     print(y_train.shape)
-    model = CapsNet(input_shape=x_train.shape,
-                    n_class=1,
-                    num_routing=args.num_routing)
+    num_classes = 46
+    print(num_classes, 'classes')
+    # define model
+    model, eval_model, manipulate_model = CapsNet(input_shape=x_train.shape[1:],
+                                                  n_class=len(np.unique(np.argmax(y_train, 1))),
+                                                  routings=args.routings)
+    # # model = CapsNet(input_shape=x_train.shape,
+    #                 n_class=num_classes,
+    #                 num_routing=args.num_routing)
     model.summary()
     
 
