@@ -98,8 +98,19 @@ def train(model, data, args):
     model.save_weights(args.save_dir + '/trained_model.h5')
     print('Trained model saved to \'%s/trained_model.h5\'' % args.save_dir)
 
-    from utils import plot_log
-    plot_log(args.save_dir + '/log.csv', show=True)
+    x_test, y_test = data
+    # y_pred, x_recon = model.predict([x_test, y_test], batch_size=100)
+    print('-' * 50)
+    # print(y_pred, y_test)
+    
+
+    y_pred, _ = model.predict([x_test, y_test], batch_size=100)
+    import numpy as np
+    score = np.mean(np.equal(y_test, np.array(np.round(y_pred).flatten())))
+    print(score)
+
+
+    print('Test acc:', round(score, 2)*100)
 
     return model
 
