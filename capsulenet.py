@@ -117,6 +117,11 @@ def train(model, data, args):
     print('-' * 50)
     print('Test acc:', np.sum(np.argmax(y_pred, 1) == np.argmax(y_test, 1)) / y_test.shape[0])
 
+    score = model.evaluate(x_test, y_test,
+                       batch_size=32, verbose=1)
+    print('Test score:', score[0])
+    print('Test accuracy:', score[1])
+
     return model
 
 
