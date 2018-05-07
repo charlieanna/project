@@ -111,7 +111,7 @@ def train(model, data, args):
                   metrics={'out_caps': 'accuracy'})
 
     model.fit([x_train, y_train], [y_train, x_train], batch_size=args.batch_size, epochs=args.epochs,
-              validation_data=[[x_test, y_test], [y_test, x_test]], callbacks=[log, tb, checkpoint], verbose=1)
+              validation_split=0.1, callbacks=[log, tb, checkpoint], verbose=1)
 
     y_pred, x_recon = model.predict([x_test, y_test], batch_size=100)
     print('-' * 50)
