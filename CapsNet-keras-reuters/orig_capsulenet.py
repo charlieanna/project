@@ -139,6 +139,15 @@ def load_imdb(maxlen=400):
    # (x_train, y_train), (x_test, y_test) = imdb.load_data(num_words=max_features)
     x_train = sequence.pad_sequences(x_train, maxlen=maxlen)
     x_test = sequence.pad_sequences(x_test, maxlen=maxlen)
+
+    print('Convert class vector to binary class matrix '
+      '(for use with categorical_crossentropy)')
+    num_classes = np.max(y_train) + 1
+    print(num_classes, 'classes')
+    y_train = keras.utils.to_categorical(y_train, num_classes)
+    y_test = keras.utils.to_categorical(y_test, num_classes)
+    print('y_train shape:', y_train.shape)
+    print('y_test shape:', y_test.shape)
     return (x_train, y_train), (x_test, y_test)
 
 
