@@ -111,10 +111,10 @@ def test(model, data):
     # print(y_pred, y_test)
     
 
-    y_pred = model.predict(x_test, batch_size=100)
+    y_pred, _ = model.predict([x_test, y_test], batch_size=100)
     print(y_pred, y_test)
     score = model.evaluate(x_test, y_test,
-                           batch_size=batch_size, verbose=1)
+                           batch_size=100, verbose=1)
     print('Test acc:', score)
 
 
