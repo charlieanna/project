@@ -106,7 +106,7 @@ def train(model, data, args):
 
 def test(model, data):
     x_test, y_test = data
-    y_pred, x_recon = model.predict_classes([x_test, y_test], batch_size=100)
+    y_pred, x_recon = model.predict([x_test, y_test], batch_size=100)
     print('-' * 50)
     print(y_pred, y_test)
     print('Test acc:', np.sum(np.argmax(y_pred, 1) == y_test) / y_test.shape[0])
