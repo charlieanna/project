@@ -117,7 +117,7 @@ def test(model, data):
     print(score)
 
 
-    print('Test acc:', score)
+    print('Test acc:', round(score, 2)*100)
 
 
 def load_imdb(maxlen=400):
