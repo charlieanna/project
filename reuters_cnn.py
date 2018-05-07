@@ -87,7 +87,7 @@ model.fit(x_train, y_train,
           epochs=epochs,
           validation_split=0.1)
 y_pred = model.predict(x_test, batch_size=batch_size)
-print(y_pred, y_test)
+print(np.argmax(y_pred, axis=-1), np.argmax(y_test, axis=-1))
 score = model.evaluate(x_test, y_test,
                        batch_size=batch_size, verbose=1)
 print('Test score:', score[0])
