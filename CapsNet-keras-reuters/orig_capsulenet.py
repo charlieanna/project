@@ -183,11 +183,8 @@ if __name__ == "__main__":
     (x_train, y_train), (x_test, y_test) = load_imdb()
     print(x_train.shape)
     print(y_train.shape)
-    num_classes = 46
-    print(num_classes, 'classes')
-    # define model
     model = CapsNet(input_shape=x_train.shape,
-                    n_class=num_classes,
+                    n_class=1,
                     num_routing=args.num_routing)
     model.summary()
     
