@@ -108,6 +108,7 @@ def test(model, data):
     x_test, y_test = data
     y_pred, x_recon = model.predict([x_test, y_test], batch_size=100)
     print('-' * 50)
+    print(y_pred, y_test)
     print('Test acc:', np.sum(np.argmax(y_pred, 1) == np.argmax(y_test, 1)) / y_test.shape[0])
 
     import matplotlib.pyplot as plt
