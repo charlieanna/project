@@ -49,7 +49,7 @@ maxpool_2 = MaxPool2D(pool_size=(sequence_length - filter_sizes[2] + 1, 1), stri
 concatenated_tensor = Concatenate(axis=1)([maxpool_0, maxpool_1, maxpool_2])
 flatten = Flatten()(concatenated_tensor)
 dropout = Dropout(drop)(flatten)
-output = Dense(units=2, activation='softmax')(dropout)
+output = Dense(units=1, activation='softmax')(dropout)
 
 # this creates a model that includes
 model = Model(inputs=inputs, outputs=output)

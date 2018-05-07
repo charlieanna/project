@@ -26,15 +26,15 @@ def CapsNet(input_shape, n_class, num_routing):
     :param num_routing: number of routing iterations
     :return: A Keras Model with 2 inputs and 2 outputs
     """
-    x = layers.Input(shape=(maxlen,))
-    embed = layers.Embedding(max_features, embed_dim, input_length=maxlen)(x)
+    x = layers.Input(shape=(56,))
+    embed = layers.Embedding(18765, embed_dim, input_length=56)(x)
 
     conv1 = layers.Conv1D(filters=256, kernel_size=9, strides=1, padding='valid', activation='relu', name='conv1')(
         embed)
     # lstm = CuDNNGRU(64, return_sequences=True)(conv1)
-    dropout = Dropout(.2)(conv1)
+    # dropout = Dropout(.2)(conv1)
     # Layer 2: Conv2D layer with `squash` activation, then reshape to [None, num_capsule, dim_vector]
-    primarycaps = PrimaryCap(dropout, dim_vector=8, n_channels=32, kernel_size=9, strides=2, padding='valid')
+    primarycaps = PrimaryCap(conv1, dim_vector=8, n_channels=32, kernel_size=9, strides=2, padding='valid')
 
     # Layer 3: Capsule layer. Routing algorithm works here.
     digitcaps = CapsuleLayer(num_capsule=n_class, dim_vector=16, num_routing=num_routing, name='digitcaps')(primarycaps)
@@ -48,7 +48,7 @@ def CapsNet(input_shape, n_class, num_routing):
     masked = Mask()([digitcaps, y])  # The true label is used to mask the output of capsule layer.
     x_recon = layers.Dense(512, activation='relu')(masked)
     x_recon = layers.Dense(1024, activation='relu')(x_recon)
-    x_recon = layers.Dense(maxlen, activation='sigmoid')(x_recon)
+    x_recon = layers.Dense(56, activation='sigmoid')(x_recon)
     # x_recon = layers.Reshape(target_shape=[1], name='out_recon')(x_recon)
 
     # two-input-two-output keras Model
@@ -135,16 +135,26 @@ def test(model, data):
 
 def load_imdb(maxlen=400):
     import keras
-    from keras.datasets import reuters
-    (x_train, y_train), (x_test, y_test) = reuters.load_data(num_words=max_features)
+    from keras.datasets import imdb
+    (x_train, y_train), (x_test, y_test) = imdb.load_data(num_words=max_features)
    # (x_train, y_train), (x_test, y_test) = imdb.load_data(num_words=max_features)
     x_train = sequence.pad_sequences(x_train, maxlen=maxlen)
     x_test = sequence.pad_sequences(x_test, maxlen=maxlen)
 
-    print('Convert class vector to binary class matrix '
-      '(for use with categorical_crossentropy)')
-    y_train = keras.utils.to_categorical(y_train.astype('float32'))
-    y_test = keras.utils.to_categorical(y_test.astype('float32'))
+    
+    print('y_train shape:', y_train.shape)
+    print('y_test shape:', y_test.shape)
+
+    from sklearn.model_selection import train_test_split
+    from data_helpers import load_data
+    x, y, vocabulary, vocabulary_inv = load_data()
+
+    # x.shape -> (10662, 56)
+    # y.shape -> (10662, 2)
+    # len(vocabulary) -> 18765
+    # len(vocabulary_inv) -> 18765
+
+    x_train, x_test, y_train, y_test = train_test_split( x, y, test_size=0.2, random_state=42)
     print('y_train shape:', y_train.shape)
     print('y_test shape:', y_test.shape)
     return (x_train, y_train), (x_test, y_test)
@@ -178,15 +188,14 @@ if __name__ == "__main__":
     (x_train, y_train), (x_test, y_test) = load_imdb()
     print(x_train.shape)
     print(y_train.shape)
-    num_classes = 46
-    print(num_classes, 'classes')
+    
     # define model
-    model= CapsNet(input_shape=x_train.shape[1:],
-                                                  n_class=len(np.unique(np.argmax(y_train, 1))),
-                                                  num_routing=args.num_routing)
-    # # model = CapsNet(input_shape=x_train.shape,
-    #                 n_class=num_classes,
-    #                 num_routing=args.num_routing)
+    # model= CapsNet(input_shape=x_train.shape[1:],
+    #                                               n_class=len(np.unique(np.argmax(y_train, 1))),
+    #                                               num_routing=args.num_routing)
+    model = CapsNet(input_shape=x_train.shape,
+                    n_class=1,
+                    num_routing=args.num_routing)
     model.summary()
     
 
