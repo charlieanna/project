@@ -98,7 +98,6 @@ def train(model, data, args):
     model.save_weights(args.save_dir + '/trained_model.h5')
     print('Trained model saved to \'%s/trained_model.h5\'' % args.save_dir)
 
-    x_test, y_test = data
     # y_pred, x_recon = model.predict([x_test, y_test], batch_size=100)
     print('-' * 50)
     # print(y_pred, y_test)
