@@ -106,23 +106,10 @@ def train(model, data, args):
 
 def test(model, data):
     x_test, y_test = data
-    y_pred, x_recon = model.predict([x_test, y_test], batch_size=100)
+    y_pred, x_recon = model.predict_classes([x_test, y_test], batch_size=100)
     print('-' * 50)
     print(y_pred, y_test)
-    print('Test acc:', np.sum(np.argmax(y_pred, 1) == np.argmax(y_test, 1)) / y_test.shape[0])
-
-    import matplotlib.pyplot as plt
-    from utils import combine_images
-    from PIL import Image
-
-    img = combine_images(np.concatenate([x_test[:50], x_recon[:50]]))
-    image = img * 255
-    Image.fromarray(image.astype(np.uint8)).save("real_and_recon.png")
-    print()
-    print('Reconstructed images are saved to ./real_and_recon.png')
-    print('-' * 50)
-    plt.imshow(plt.imread("real_and_recon.png", ))
-    plt.show()
+    print('Test acc:', np.sum(np.argmax(y_pred, 1) == y_test) / y_test.shape[0])
 
 
 def load_imdb(maxlen=400):
