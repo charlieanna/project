@@ -105,6 +105,7 @@ def train(model, data, args):
     
 
     y_pred, _ = model.predict([x_test, y_test], batch_size=100)
+    print(y_pred, y_test)
     import numpy as np
     score = np.mean(np.equal(y_test, np.array(np.round(y_pred).flatten())))
     print(score)
@@ -120,7 +121,7 @@ def test(model, data):
     # y_pred, x_recon = model.predict([x_test, y_test], batch_size=100)
     print('-' * 50)
     # print(y_pred, y_test)
-    
+    print(y_pred, y_test)
 
     y_pred, _ = model.predict([x_test, y_test], batch_size=100)
     import numpy as np
