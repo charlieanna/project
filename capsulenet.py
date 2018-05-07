@@ -117,8 +117,7 @@ def train(model, data, args):
     print('-' * 50)
     print('Test acc:', np.sum(np.argmax(y_pred, 1) == np.argmax(y_test, 1)) / y_test.shape[0])
 
-    score = model.evaluate([x_test, y_test],
-                       batch_size=32, verbose=1)
+    score = model.evaluate(x_test, y_test, verbose=1)
     print('Test score:', score[0])
     print('Test accuracy:', score[1])
 
@@ -189,7 +188,7 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser()
     parser.add_argument('--batch_size', default=32, type=int)
-    parser.add_argument('--epochs', default=2, type=int)
+    parser.add_argument('--epochs', default=1, type=int)
     parser.add_argument('--lam_recon', default=0.0005, type=float)
     parser.add_argument('--num_routing', default=3, type=int)  # num_routing should > 0
     parser.add_argument('--shift_fraction', default=0.1, type=float)
