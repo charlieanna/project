@@ -143,7 +143,8 @@ def load_imdb(maxlen=400):
 
     print('Convert class vector to binary class matrix '
       '(for use with categorical_crossentropy)')
-    num_classes = np.max(y_train) + 1
+    print(y_test)
+    num_classes = 46
     print(num_classes, 'classes')
     y_train = keras.utils.to_categorical(y_train, num_classes)
     y_test = keras.utils.to_categorical(y_test, num_classes)
@@ -180,7 +181,7 @@ if __name__ == "__main__":
     (x_train, y_train), (x_test, y_test) = load_imdb()
     print(x_train.shape)
     print(y_train.shape)
-    num_classes = np.max(y_train) + 1
+    num_classes = 46
     print(num_classes, 'classes')
     # define model
     model = CapsNet(input_shape=x_train.shape,
