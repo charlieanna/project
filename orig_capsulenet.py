@@ -31,7 +31,7 @@ def CapsNet(input_shape, n_class, num_routing):
 
     conv1 = layers.Conv1D(filters=256, kernel_size=9, strides=1, padding='valid', activation='relu', name='conv1')(
         embed)
-    lstm = CuDNNGRU(64, return_sequences=True)(conv1)
+    # lstm = CuDNNGRU(64, return_sequences=True)(conv1)
     dropout = Dropout(.2)(lstm)
     # Layer 2: Conv2D layer with `squash` activation, then reshape to [None, num_capsule, dim_vector]
     primarycaps = PrimaryCap(dropout, dim_vector=8, n_channels=32, kernel_size=9, strides=2, padding='valid')
