@@ -69,5 +69,6 @@ model.fit(x_train, y_train,
 y_pred = model.predict(x_test, batch_size=batch_size)
 import numpy as np
 score = np.mean(np.equal(y_test, np.round(y_pred)))
+print(score)
 print('Test score:', score[0])
 print('Test accuracy:', score[1])
