@@ -147,7 +147,7 @@ def load_imdb(maxlen=400):
     # len(vocabulary) -> 18765
     # len(vocabulary_inv) -> 18765
 
-    X_train, X_test, y_train, y_test = train_test_split( x, y, test_size=0.2, random_state=42)
+    x_train, x_test, y_train, y_test = train_test_split( x, y, test_size=0.2, random_state=42)
    # (x_train, y_train), (x_test, y_test) = imdb.load_data(num_words=max_features)
     x_train = sequence.pad_sequences(x_train, maxlen=maxlen)
     x_test = sequence.pad_sequences(x_test, maxlen=maxlen)
