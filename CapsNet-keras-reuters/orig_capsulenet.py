@@ -181,7 +181,7 @@ if __name__ == "__main__":
     num_classes = 46
     print(num_classes, 'classes')
     # define model
-    model, eval_model, manipulate_model = CapsNet(input_shape=x_train.shape[1:],
+    model= CapsNet(input_shape=x_train.shape[1:],
                                                   n_class=len(np.unique(np.argmax(y_train, 1))),
                                                   num_routing=args.num_routing)
     # # model = CapsNet(input_shape=x_train.shape,
