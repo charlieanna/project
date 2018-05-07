@@ -29,7 +29,7 @@ filter_sizes = [3,4,5]
 num_filters = 512
 drop = 0.5
 
-epochs = 100
+epochs = 10
 batch_size = 30
 
 # this returns a tensor
