@@ -13,6 +13,9 @@ from keras import backend as K
 from capsulelayers import CapsuleLayer, PrimaryCap, Length, Mask
 from keras.preprocessing import sequence
 from keras.layers import LSTM, Dropout, GRU, CuDNNLSTM, CuDNNGRU
+from sklearn.model_selection import train_test_split
+from data_helpers import load_data
+
 max_features = 5000
 maxlen = 400
 embed_dim = 50
@@ -135,8 +138,16 @@ def test(model, data):
 
 def load_imdb(maxlen=400):
     import keras
-    from keras.datasets import reuters
-    (x_train, y_train), (x_test, y_test) = reuters.load_data(num_words=max_features)
+    
+    print('Loading data')
+    x, y, vocabulary, vocabulary_inv = load_data()
+
+    # x.shape -> (10662, 56)
+    # y.shape -> (10662, 2)
+    # len(vocabulary) -> 18765
+    # len(vocabulary_inv) -> 18765
+
+    X_train, X_test, y_train, y_test = train_test_split( x, y, test_size=0.2, random_state=42)
    # (x_train, y_train), (x_test, y_test) = imdb.load_data(num_words=max_features)
     x_train = sequence.pad_sequences(x_train, maxlen=maxlen)
     x_test = sequence.pad_sequences(x_test, maxlen=maxlen)
