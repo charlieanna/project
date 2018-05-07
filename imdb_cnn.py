@@ -74,6 +74,6 @@ print('Test score:', score[0])
 print('Test accuracy:', score[1])
 
 import numpy as np
-print(y_test, np.array(np.round(y_pred)).flatten())
+print(y_test, np.array(np.round(y_pred).flatten()))
 score = np.mean(np.equal(y_test, np.array(np.round(y_pred).flatten())))
 print(score)

@@ -112,8 +112,9 @@ def test(model, data):
     
 
     y_pred, _ = model.predict([x_test, y_test], batch_size=100)
-    print(y_pred, y_test)
-    score = np.mean(np.equal(y_test, np.round(y_pred)))
+    import numpy as np
+    score = np.mean(np.equal(y_test, np.array(np.round(y_pred).flatten())))
+    print(score)
 
 
     print('Test acc:', score)
