@@ -1,9 +1,9 @@
 """
 Keras implementation of CapsNet in Hinton's paper Dynamic Routing Between Capsules.
 Usage:
-       python CapsNet.py
-       python CapsNet.py --epochs 100
-       python CapsNet.py --epochs 100 --num_routing 3
+       python imdb_capsulenet.py
+       python imdb_capsulenet.py --epochs 100
+       python imdb_capsulenet.py --epochs 100 --num_routing 3
        ... ...
     
 """
