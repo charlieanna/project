@@ -1,38 +1,21 @@
 """
 Keras implementation of CapsNet in Hinton's paper Dynamic Routing Between Capsules.
-
 Usage:
        python CapsNet.py
        python CapsNet.py --epochs 100
        python CapsNet.py --epochs 100 --num_routing 3
        ... ...
-
     
 """
-from __future__ import print_function
-#    from keras.layers import LSTM, Dropout
-from keras.layers import LSTM, Dropout
+
 from keras import layers, models
 from keras import backend as K
 from capsulelayers import CapsuleLayer, PrimaryCap, Length, Mask
 from keras.preprocessing import sequence
-
-
-
-import numpy as np
-import keras
-from keras.datasets import reuters
-from keras.models import Sequential
-from keras.layers import Dense, Dropout, Activation
-from keras.preprocessing.text import Tokenizer
-
+from keras.layers import LSTM, Dropout, GRU, CuDNNLSTM, CuDNNGRU
 max_features = 5000
 maxlen = 400
 embed_dim = 50
-
-max_words = 400
-batch_size = 32
-epochs = 5
 
 
 def CapsNet(input_shape, n_class, num_routing):
@@ -43,15 +26,15 @@ def CapsNet(input_shape, n_class, num_routing):
     :param num_routing: number of routing iterations
     :return: A Keras Model with 2 inputs and 2 outputs
     """
-    x = layers.Input(shape=(maxlen,))
-    embed = layers.Embedding(max_features, embed_dim, input_length=maxlen)(x)
+    x = layers.Input(shape=(56,))
+    embed = layers.Embedding(18765, embed_dim, input_length=56)(x)
+
     conv1 = layers.Conv1D(filters=256, kernel_size=9, strides=1, padding='valid', activation='relu', name='conv1')(
         embed)
-   # lstm = CuDNNLSTM(64, return_sequences=True)(conv1)
-    #dropout = Dropout(.2)(lstm)
+    lstm = LSTM(64, return_sequences=True)(conv1)
+    dropout = Dropout(.2)(lstm)
     # Layer 2: Conv2D layer with `squash` activation, then reshape to [None, num_capsule, dim_vector]
-    primarycaps = PrimaryCap(conv1, dim_vector=8, n_channels=32, kernel_size=9, strides=2, padding='valid')
-
+    primarycaps = PrimaryCap(dropout, dim_vector=8, n_channels=32, kernel_size=9, strides=2, padding='valid')
 
     # Layer 3: Capsule layer. Routing algorithm works here.
     digitcaps = CapsuleLayer(num_capsule=n_class, dim_vector=16, num_routing=num_routing, name='digitcaps')(primarycaps)
@@ -65,7 +48,7 @@ def CapsNet(input_shape, n_class, num_routing):
     masked = Mask()([digitcaps, y])  # The true label is used to mask the output of capsule layer.
     x_recon = layers.Dense(512, activation='relu')(masked)
     x_recon = layers.Dense(1024, activation='relu')(x_recon)
-    x_recon = layers.Dense(maxlen, activation='sigmoid')(x_recon)
+    x_recon = layers.Dense(56, activation='sigmoid')(x_recon)
     # x_recon = layers.Reshape(target_shape=[1], name='out_recon')(x_recon)
 
     # two-input-two-output keras Model
@@ -113,48 +96,66 @@ def train(model, data, args):
     model.fit([x_train, y_train], [y_train, x_train], batch_size=args.batch_size, epochs=args.epochs,
               validation_split=0.1, callbacks=[log, tb, checkpoint], verbose=1)
 
+    model.save_weights(args.save_dir + '/trained_model.h5')
+    print('Trained model saved to \'%s/trained_model.h5\'' % args.save_dir)
+
+    # y_pred, x_recon = model.predict([x_test, y_test], batch_size=100)
+    print('-' * 50)
+    # print(y_pred, y_test)
+    
+
+    y_pred, _ = model.predict([x_test, y_test], batch_size=100)
+    import numpy as np
+    score = np.mean(np.equal(y_test, np.array(np.round(y_pred).flatten())))
+    print(score)
+
+
+    print('Test acc:', round(score, 2)*100)
 
     return model
 
 
 def test(model, data):
     x_test, y_test = data
-    y_pred, x_recon = model.predict([x_test, y_test], batch_size=100)
+    # y_pred, x_recon = model.predict([x_test, y_test], batch_size=100)
     print('-' * 50)
+    # print(y_pred, y_test)
+    
+
+    y_pred, _ = model.predict([x_test, y_test], batch_size=100)
     print(y_pred, y_test)
-    print('Test acc:', np.sum(np.argmax(y_pred, 1) == np.argmax(y_test, 1)) / y_test.shape[0])
+    import numpy as np
+    score = np.mean(np.equal(y_test, np.array(np.round(y_pred).flatten())))
+    print(score)
+
+
+    print('Test acc:', round(score, 2)*100)
 
 
 def load_imdb(maxlen=400):
+    import keras
     from keras.datasets import imdb
-
     (x_train, y_train), (x_test, y_test) = imdb.load_data(num_words=max_features)
-    # (x_train, y_train), (x_test, y_test) = reuters.load_data(num_words=max_features,
-                                                            # test_split=0.2)
-    # x_train = sequence.pad_sequences(x_train, maxlen=maxlen)
-    # x_test = sequence.pad_sequences(x_test, maxlen=maxlen)
-    print('Loading data...')
-   
-    print(len(x_train), 'train sequences')
-    print(len(x_test), 'test sequences')
+   # (x_train, y_train), (x_test, y_test) = imdb.load_data(num_words=max_features)
+    x_train = sequence.pad_sequences(x_train, maxlen=maxlen)
+    x_test = sequence.pad_sequences(x_test, maxlen=maxlen)
 
-    num_classes = np.max(y_train) + 1
-    print(num_classes, 'classes')
-
-    print('Vectorizing sequence data...')
-    tokenizer = Tokenizer(num_words=max_words)
-    x_train = tokenizer.sequences_to_matrix(x_train, mode='binary')
-    x_test = tokenizer.sequences_to_matrix(x_test, mode='binary')
-    print('x_train shape:', x_train.shape)
-    print('x_test shape:', x_test.shape)
-
-    print('Convert class vector to binary class matrix '
-          '(for use with categorical_crossentropy)')
-    y_train = keras.utils.to_categorical(y_train, num_classes)
-    y_test = keras.utils.to_categorical(y_test, num_classes)
+    
     print('y_train shape:', y_train.shape)
     print('y_test shape:', y_test.shape)
 
+    from sklearn.model_selection import train_test_split
+    from data_helpers import load_data
+    x, y, vocabulary, vocabulary_inv = load_data()
+
+    # x.shape -> (10662, 56)
+    # y.shape -> (10662, 2)
+    # len(vocabulary) -> 18765
+    # len(vocabulary_inv) -> 18765
+
+    x_train, x_test, y_train, y_test = train_test_split( x, y, test_size=0.2, random_state=42)
+    print('y_train shape:', y_train.shape)
+    print('y_test shape:', y_test.shape)
     return (x_train, y_train), (x_test, y_test)
 
 
@@ -168,8 +169,8 @@ if __name__ == "__main__":
     import argparse
 
     parser = argparse.ArgumentParser()
-    parser.add_argument('--batch_size', default=32, type=int)
-    parser.add_argument('--epochs', default=1, type=int)
+    parser.add_argument('--batch_size', default=100, type=int)
+    parser.add_argument('--epochs', default=2, type=int)
     parser.add_argument('--lam_recon', default=0.0005, type=float)
     parser.add_argument('--num_routing', default=3, type=int)  # num_routing should > 0
     parser.add_argument('--shift_fraction', default=0.1, type=float)
@@ -186,12 +187,16 @@ if __name__ == "__main__":
     (x_train, y_train), (x_test, y_test) = load_imdb()
     print(x_train.shape)
     print(y_train.shape)
+    
     # define model
+    # model= CapsNet(input_shape=x_train.shape[1:],
+    #                                               n_class=len(np.unique(np.argmax(y_train, 1))),
+    #                                               num_routing=args.num_routing)
     model = CapsNet(input_shape=x_train.shape,
-                    n_class=y_train.shape[1],
+                    n_class=1,
                     num_routing=args.num_routing)
     model.summary()
-    plot_model(model, to_file=args.save_dir + '/model.png', show_shapes=True)
+    
 
     # train or test
     if args.weights is not None:  # init the model weights with provided one

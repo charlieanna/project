@@ -15,7 +15,8 @@ from keras.models import Sequential, Model
 from keras.layers import Dense, Dropout, Activation
 from keras.layers import Embedding
 from keras.layers import Conv1D, GlobalMaxPooling1D, Input
-
+from sklearn.model_selection import train_test_split
+from data_helpers import load_data
 
 max_words = 1000
 batch_size = 32
@@ -31,34 +32,38 @@ hidden_dims = 250
 
 
 
-print('Loading data...')
-(x_train, y_train), (x_test, y_test) = reuters.load_data(num_words=max_words,
-                                                         test_split=0.2)
-print(len(x_train), 'train sequences')
-print(len(x_test), 'test sequences')
+x, y, vocabulary, vocabulary_inv = load_data()
 
-num_classes = np.max(y_train) + 1
-print(num_classes, 'classes')
+# x.shape -> (10662, 56)
+# y.shape -> (10662, 2)
+# len(vocabulary) -> 18765
+# len(vocabulary_inv) -> 18765
 
-print('Vectorizing sequence data...')
-tokenizer = Tokenizer(num_words=max_words)
-x_train = tokenizer.sequences_to_matrix(x_train, mode='binary')
-x_test = tokenizer.sequences_to_matrix(x_test, mode='binary')
-print('x_train shape:', x_train.shape)
-print('x_test shape:', x_test.shape)
+x_train, x_test, y_train, y_test = train_test_split( x, y, test_size=0.2, random_state=42)
 
-print('Convert class vector to binary class matrix '
-      '(for use with categorical_crossentropy)')
-y_train = keras.utils.to_categorical(y_train, num_classes)
-y_test = keras.utils.to_categorical(y_test, num_classes)
-print('y_train shape:', y_train.shape)
-print('y_test shape:', y_test.shape)
+# X_train.shape -> (8529, 56)
+# y_train.shape -> (8529, 2)
+# X_test.shape -> (2133, 56)
+# y_test.shape -> (2133, 2)
+
+
+sequence_length = x.shape[1] # 56
+vocabulary_size = len(vocabulary_inv) # 18765
+embedding_dim = 256
+filter_sizes = [3,4,5]
+num_filters = 512
+drop = 0.5
+
+# this returns a tensor
+print("Creating Model...")
+x = Input(shape=(sequence_length,), dtype='int32')
+embed = Embedding(input_dim=vocabulary_size, output_dim=embedding_dim, input_length=sequence_length)(x)
 
 print('Building model...')
 
 
-x = Input(shape=(maxlen, ))
-embed = Embedding(max_features, embedding_dims, input_length=maxlen)(x)
+# x = Input(shape=(maxlen, ))
+# embed = Embedding(max_features, embedding_dims, input_length=maxlen)(x)
 print(embed.shape)
 dropout = Dropout(0.2)(embed)
 
@@ -73,7 +78,7 @@ x_out = Dense(hidden_dims, )(pool)
 dropout = Dropout(0.2)(x_out)
 
 out = Activation('relu')(dropout)
-x_out = Dense(46, activation='sigmoid')(out)
+x_out = Dense(1, activation='sigmoid')(out)
 
 model = Model(x, x_out)
 
