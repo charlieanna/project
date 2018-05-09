@@ -18,7 +18,7 @@ maxlen = 400
 embed_dim = 50
 
 
-def CapsNet(input_shape, n_class, num_routing):
+def CapsNet(input_shape, n_class, num_routing, model = None):
     """
     A Capsule Network on MNIST.
     :param input_shape: data shape, 4d, [None, width, height, channels]
@@ -31,8 +31,19 @@ def CapsNet(input_shape, n_class, num_routing):
 
     conv1 = layers.Conv1D(filters=256, kernel_size=9, strides=1, padding='valid', activation='relu', name='conv1')(
         embed)
-    lstm = LSTM(64, return_sequences=True)(conv1)
-    dropout = Dropout(.2)(lstm)
+    dropout = Dropout(.2)(conv1)
+    if model == "LSTM":
+        model = LSTM(64, return_sequences=True)(conv1)
+        dropout = Dropout(.2)(model)
+    if model == "GRU"
+        model = GRU(64, return_sequences=True)(conv1)
+        dropout = Dropout(.2)(model)
+    if model == "CuDNNLSTM"
+        model = CuDNNLSTM(64, return_sequences=True)(conv1)
+        dropout = Dropout(.2)(model)
+    if model == "CuDNNGRU"
+        model = CuDNNGRU(64, return_sequences=True)(conv1)
+        dropout = Dropout(.2)(model)
     # Layer 2: Conv2D layer with `squash` activation, then reshape to [None, num_capsule, dim_vector]
     primarycaps = PrimaryCap(dropout, dim_vector=8, n_channels=32, kernel_size=9, strides=2, padding='valid')
 
@@ -178,6 +189,7 @@ if __name__ == "__main__":
     parser.add_argument('--save_dir', default='./result')
     parser.add_argument('--is_training', default=1, type=int)
     parser.add_argument('--weights', default=None)
+    parser.add_argument('--model', default=None)
     args = parser.parse_args()
     print(args)
     if not os.path.exists(args.save_dir):
@@ -194,7 +206,7 @@ if __name__ == "__main__":
     #                                               num_routing=args.num_routing)
     model = CapsNet(input_shape=x_train.shape,
                     n_class=1,
-                    num_routing=args.num_routing)
+                    num_routing=args.num_routing, model = args.model)
     model.summary()
     
 

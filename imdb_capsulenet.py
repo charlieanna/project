@@ -18,7 +18,7 @@ maxlen = 400
 embed_dim = 50
 
 
-def CapsNet(input_shape, n_class, num_routing):
+def CapsNet(input_shape, n_class, num_routing, model = None):
     """
     A Capsule Network on MNIST.
     :param input_shape: data shape, 4d, [None, width, height, channels]
@@ -31,8 +31,20 @@ def CapsNet(input_shape, n_class, num_routing):
 
     conv1 = layers.Conv1D(filters=256, kernel_size=9, strides=1, padding='valid', activation='relu', name='conv1')(
         embed)
-    # lstm = CuDNNGRU(64, return_sequences=True)(conv1)
+
     dropout = Dropout(.2)(conv1)
+    if model == "LSTM":
+        model = LSTM(64, return_sequences=True)(conv1)
+        dropout = Dropout(.2)(model)
+    if model == "GRU"
+        model = GRU(64, return_sequences=True)(conv1)
+        dropout = Dropout(.2)(model)
+    if model == "CuDNNLSTM"
+        model = CuDNNLSTM(64, return_sequences=True)(conv1)
+        dropout = Dropout(.2)(model)
+    if model == "CuDNNGRU"
+        model = CuDNNGRU(64, return_sequences=True)(conv1)
+        dropout = Dropout(.2)(model)
     # Layer 2: Conv2D layer with `squash` activation, then reshape to [None, num_capsule, dim_vector]
     primarycaps = PrimaryCap(dropout, dim_vector=8, n_channels=32, kernel_size=9, strides=2, padding='valid')
 
