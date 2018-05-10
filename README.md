@@ -61,8 +61,6 @@ saved to `result/trained_model.h5`. Now just launch the following command to get
 ```
 $ python capsulenet.py --is_training 0 --weights result/trained_model.h5
 ```
-It will output the testing accuracy and show the reconstructed images.
-The testing data is same as the validation data. It will be easy to test on new data, 
-just change the code as you want (Of course you can do it!!!)
+It will output the testing accuracy.
 
 
