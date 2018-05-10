@@ -1,5 +1,5 @@
 ## NOTE
-This implementation is fork of https://github.com/XifengGuo/CapsNet-Keras , applied to IMDB texts reviews dataset.
+This implementation is fork of https://github.com/XifengGuo/CapsNet-Keras , applied to IMDB texts reviews dataset and Rotten Tomotoes dataset 
 
 
 
@@ -14,7 +14,6 @@ A Keras implementation of CapsNet in the paper:
 
 ## Requirements
 - [Keras](https://github.com/fchollet/keras) 
-- matplotlib
 
 ## Usage
 
@@ -28,21 +27,26 @@ Install Keras:
 Clone this repository with ``git``.
 
 ```
-$ git clone https://github.com/streamride/CapsNet-keras-imdb.git
+$ git clone https://github.com/charlieanna/project.git
 $ cd CapsNet-Keras
 ```
 
-**Step 3.** 
-Training:
-```
-$ python capsulenet.py
-```
-Training with one routing iteration (default 3).   
+We have analyzed the capsule net on two datasets, imdb and rotten tomotoes dataset. 
+You can check the results of the traning as well as the test results by using the following commands which will run the python files. 
 
-`$ python capsulenet.py --num_routing 1`
+### Analysis on the rotten tomatoes dataset.
+python rotten_cnn.py # for only convolution layer 
+python rotten_capsulenet.py --model=LSTM
+python rotten_capsulenet.py --model=GRU
+python rotten_capsulenet.py --model=CuDNNLSTM
+python rotten_capsulenet.py --model=CuDNNGRU
 
-Other parameters include `batch_size, epochs, lam_recon, shift_fraction, save_dir` can 
-passed to the function in the same way. Please refer to `capsulenet.py`
+### Analysis on the imdb dataset.
+python imdb_cnn.py # for only convolution layer 
+python imdb_capsulenet.py --model=LSTM
+python imdb_capsulenet.py --model=GRU
+python imdb_capsulenet.py --model=CuDNNLSTM
+python imdb_capsulenet.py --model=CuDNNGRU
 
 ### Testing
 
@@ -56,29 +60,3 @@ The testing data is same as the validation data. It will be easy to test on new 
 just change the code as you want (Of course you can do it!!!)
 
 
-## Other Implementations
-- Kaggle (this version as self-contained notebook):
-  - [MNIST Dataset](https://www.kaggle.com/kmader/capsulenet-on-mnist) running on the standard MNIST and predicting for test data
-  - [MNIST Fashion](https://www.kaggle.com/kmader/capsulenet-on-fashion-mnist) running on the more challenging Fashion images.
-- TensorFlow:
-  - [naturomics/CapsNet-Tensorflow](https://github.com/naturomics/CapsNet-Tensorflow.git)   
-  Very good implementation. I referred to this repository in my code.
-  - [InnerPeace-Wu/CapsNet-tensorflow](https://github.com/InnerPeace-Wu/CapsNet-tensorflow)   
-  I referred to the use of tf.scan when optimizing my CapsuleLayer.
-  - [LaoDar/tf_CapsNet_simple](https://github.com/LaoDar/tf_CapsNet_simple)
-
-- PyTorch:
-  - [nishnik/CapsNet-PyTorch](https://github.com/nishnik/CapsNet-PyTorch.git)
-  - [timomernick/pytorch-capsule](https://github.com/timomernick/pytorch-capsule)
-  - [gram-ai/capsule-networks](https://github.com/gram-ai/capsule-networks)
-  - [andreaazzini/capsnet.pytorch](https://github.com/andreaazzini/capsnet.pytorch.git)
-  - [leftthomas/CapsNet](https://github.com/leftthomas/CapsNet)
-  
-- MXNet:
-  - [AaronLeong/CapsNet_Mxnet](https://github.com/AaronLeong/CapsNet_Mxnet)
-  
-- Lasagne (Theano):
-  - [DeniskaMazur/CapsNet-Lasagne](https://github.com/DeniskaMazur/CapsNet-Lasagne)
-
-- Chainer:
-  - [soskek/dynamic_routing_between_capsules](https://github.com/soskek/dynamic_routing_between_capsules)
