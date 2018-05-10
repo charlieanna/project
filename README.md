@@ -35,18 +35,18 @@ We have analyzed the capsule net on two datasets, imdb and rotten tomotoes datas
 You can check the results of the traning as well as the test results by using the following commands which will run the python files. 
 
 ### Analysis on the rotten tomatoes dataset.
--python rotten_cnn.py
--python rotten_capsulenet.py --model=LSTM
--python rotten_capsulenet.py --model=GRU
--python rotten_capsulenet.py --model=CuDNNLSTM
--python rotten_capsulenet.py --model=CuDNNGRU
+- python rotten_cnn.py
+- python rotten_capsulenet.py --model=LSTM
+- python rotten_capsulenet.py --model=GRU
+- python rotten_capsulenet.py --model=CuDNNLSTM
+- python rotten_capsulenet.py --model=CuDNNGRU
 
 ### Analysis on the imdb dataset.
--python imdb_cnn.py
--python imdb_capsulenet.py --model=LSTM
--python imdb_capsulenet.py --model=GRU
--python imdb_capsulenet.py --model=CuDNNLSTM
--python imdb_capsulenet.py --model=CuDNNGRU
+- python imdb_cnn.py
+- python imdb_capsulenet.py --model=LSTM
+- python imdb_capsulenet.py --model=GRU
+- python imdb_capsulenet.py --model=CuDNNLSTM
+- python imdb_capsulenet.py --model=CuDNNGRU
 
 ### Testing
 
