@@ -37,7 +37,8 @@ You can check the results of the traning as well as the test results by using th
 ### Analysis on the rotten tomatoes dataset.
 - python rotten_cnn.py 
 - python rotten_capsulenet.py **For convolution layer with capsule net**
-**For convolution layer with the model specified and then capsule net**
+
+#### For convolution layer with the model specified and then capsule net
 - python rotten_capsulenet.py --model=LSTM
 - python rotten_capsulenet.py --model=GRU
 - python rotten_capsulenet.py --model=CuDNNLSTM
@@ -46,7 +47,8 @@ You can check the results of the traning as well as the test results by using th
 ### Analysis on the imdb dataset.
 - python imdb_cnn.py
 - python imdb_capsulenet.py **For convolution layer with capsule net**
-**For convolution layer with the model specified and then capsule net**
+
+#### For convolution layer with the model specified and then capsule net
 - python imdb_capsulenet.py --model=LSTM
 - python imdb_capsulenet.py --model=GRU
 - python imdb_capsulenet.py --model=CuDNNLSTM
