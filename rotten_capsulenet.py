@@ -35,13 +35,13 @@ def CapsNet(input_shape, n_class, num_routing, model = None):
     if model == "LSTM":
         model = LSTM(64, return_sequences=True)(conv1)
         dropout = Dropout(.2)(model)
-    elif model == "GRU"
+    elif model == "GRU":
         model = GRU(64, return_sequences=True)(conv1)
         dropout = Dropout(.2)(model)
-    elif model == "CuDNNLSTM"
+    elif model == "CuDNNLSTM":
         model = CuDNNLSTM(64, return_sequences=True)(conv1)
         dropout = Dropout(.2)(model)
-    elif model == "CuDNNGRU"
+    elif model == "CuDNNGRU":
         model = CuDNNGRU(64, return_sequences=True)(conv1)
         dropout = Dropout(.2)(model)
     else:
