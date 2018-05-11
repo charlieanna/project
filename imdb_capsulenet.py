@@ -172,6 +172,7 @@ if __name__ == "__main__":
     parser.add_argument('--save_dir', default='./result')
     parser.add_argument('--is_training', default=1, type=int)
     parser.add_argument('--weights', default=None)
+    parser.add_argument('--model', default=None)
     args = parser.parse_args()
     print(args)
     if not os.path.exists(args.save_dir):
@@ -184,7 +185,7 @@ if __name__ == "__main__":
     # define model
     model = CapsNet(input_shape=x_train.shape,
                     n_class=1,
-                    num_routing=args.num_routing)
+                    num_routing=args.num_routing, model = args.model)
     model.summary()
     
 
